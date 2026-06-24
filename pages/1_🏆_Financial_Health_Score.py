@@ -111,7 +111,7 @@ with col_score:
         margin=dict(t=30, b=0, l=30, r=30),
         height=300
     )
-    st.plotly_chart(fig_gauge, use_container_width=True)
+    st.plotly_chart(fig_gauge, width='stretch')
     
     # Brief breakdown table
     st.markdown("### Sub-components details:")
@@ -155,7 +155,7 @@ with col_radar:
         xaxis=dict(range=[0, 100]),
         margin=dict(t=30, b=30, l=150, r=30)
     )
-    st.plotly_chart(fig_sub, use_container_width=True)
+    st.plotly_chart(fig_sub, width='stretch')
     
 st.markdown("---")
 st.subheader("Historical Health Score Trend")
@@ -168,4 +168,4 @@ fig_score_trend.update_layout(
     xaxis=dict(tickangle=-45, nticks=20),
     yaxis=dict(range=[0, 100])
 )
-st.plotly_chart(fig_score_trend, use_container_width=True)
+st.plotly_chart(fig_score_trend, width='stretch')

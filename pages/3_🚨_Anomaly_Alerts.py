@@ -64,9 +64,9 @@ fig_anom.update_layout(
     xaxis=dict(tickangle=-45, nticks=20),
     yaxis=dict(title="Monthly Expenses (Debit)")
 )
-st.plotly_chart(fig_anom, use_container_width=True)
+st.plotly_chart(fig_anom, width='stretch')
 
 # List Anomalies in table
 st.subheader("List of Outlier Months (Moderate & Severe)")
 outliers = df_rec[df_rec['anomaly_severity'].isin(['Moderate Anomaly', 'Severe Anomaly'])][['year_month', 'total_credit', 'total_debit', 'ending_balance', 'net_savings', 'anomaly_severity']]
-st.dataframe(outliers.sort_values(by='year_month', ascending=False), use_container_width=True)
+st.dataframe(outliers.sort_values(by='year_month', ascending=False), width='stretch')

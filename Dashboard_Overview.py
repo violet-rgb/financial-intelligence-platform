@@ -81,7 +81,7 @@ with chart_col1:
         xaxis=dict(tickangle=-45, nticks=20),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
-    st.plotly_chart(fig_flow, use_container_width=True)
+    st.plotly_chart(fig_flow, width='stretch')
     
 with chart_col2:
     st.subheader("Ending Balance Growth Trend")
@@ -96,4 +96,4 @@ with chart_col2:
         plot_bgcolor='rgba(0,0,0,0)',
         xaxis=dict(tickangle=-45, nticks=20)
     )
-    st.plotly_chart(fig_bal, use_container_width=True)
+    st.plotly_chart(fig_bal, width='stretch')

@@ -15,6 +15,7 @@ for p in all_files:
     if new_content != content:
         with open(p, 'w', encoding='utf-8') as f:
             f.write(new_content)
-        print('Fixed:', os.path.basename(p))
+        print('Fixed:', os.path.basename(p).encode('ascii', errors='replace').decode('ascii'))
     else:
-        print('No change:', os.path.basename(p))
+        print('No change:', os.path.basename(p).encode('ascii', errors='replace').decode('ascii'))
+

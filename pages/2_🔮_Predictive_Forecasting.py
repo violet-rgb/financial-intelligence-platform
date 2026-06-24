@@ -135,7 +135,7 @@ fig_f.update_layout(
     xaxis=dict(tickangle=-45, nticks=20),
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
 )
-st.plotly_chart(fig_f, use_container_width=True)
+st.plotly_chart(fig_f, width='stretch')
 st.caption("Note: Forecast line is shifted by +1 month to align the prediction made at month t-1 with the actual outcome at month t.")
 
 st.markdown("---")
@@ -192,7 +192,7 @@ fig_e.update_layout(
     yaxis_title="Amount ($)",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
 )
-st.plotly_chart(fig_e, use_container_width=True)
+st.plotly_chart(fig_e, width='stretch')
 
 st.markdown("---")
 
@@ -247,7 +247,7 @@ fig_i.update_layout(
     yaxis_title="Amount ($)",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
 )
-st.plotly_chart(fig_i, use_container_width=True)
+st.plotly_chart(fig_i, width='stretch')
 st.caption("Projection uses a weighted moving average: 60% weight on last month, 25% on 2 months ago, 15% on 3 months ago.")
 
 # ── Expense Breakdown Context ─────────────────────────────────────────────────
@@ -285,4 +285,4 @@ if pairs:
             font=dict(size=14, color='#FFFFFF')
         )]
     )
-    st.plotly_chart(fig_pie, use_container_width=True)
+    st.plotly_chart(fig_pie, width='stretch')

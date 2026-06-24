@@ -46,7 +46,7 @@ with t_col1:
             margin=dict(t=30, b=0, l=10, r=10),
             height=300
         )
-        st.plotly_chart(fig_pie, use_container_width=True)
+        st.plotly_chart(fig_pie, width='stretch')
     else:
         st.info("No debit transactions recorded this month.")
         
