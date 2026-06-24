@@ -70,11 +70,14 @@ else:
 
 predicted_next_savings = predicted_next_income - predicted_next_expense
 
+income_delta = predicted_next_income - latest_rec['total_credit']
+income_delta_pct = (income_delta / (latest_rec['total_credit'] + 1e-5)) * 100
+
 # ── KPI Row ──────────────────────────────────────────────────────────────────
-f1, f2, f3, f4 = st.columns(4)
+f1, f2, f3, f4, f5 = st.columns(5)
 with f1:
     st.metric(
-        label=f"Current Ending Balance ({latest_rec['year_month']})",
+        label=f"Current Balance ({latest_rec['year_month']})",
         value=f"${latest_rec['ending_balance']:,.2f}"
     )
 with f2:
@@ -85,16 +88,22 @@ with f2:
     )
 with f3:
     st.metric(
+        label=f"Forecasted Income ({next_month_name})",
+        value=f"${predicted_next_income:,.2f}",
+        delta=f"{income_delta_pct:+.1f}% vs this month"
+    )
+with f4:
+    st.metric(
         label=f"Forecasted Expenses ({next_month_name})",
         value=f"${predicted_next_expense:,.2f}",
         delta=f"{expense_delta_pct:+.1f}% vs this month",
         delta_color="inverse"   # red = expense increase is bad
     )
-with f4:
+with f5:
     st.metric(
         label=f"Projected Net Savings ({next_month_name})",
         value=f"${predicted_next_savings:,.2f}",
-        delta=f"Income est. ${predicted_next_income:,.2f}"
+        delta=f"{'▲' if predicted_next_savings >= 0 else '▼'} Savings outlook"
     )
 
 st.markdown("---")
@@ -184,6 +193,62 @@ fig_e.update_layout(
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
 )
 st.plotly_chart(fig_e, use_container_width=True)
+
+st.markdown("---")
+
+# ── Chart 3: Actual vs Projected Income ──────────────────────────────────────
+st.subheader("💰 Historical Actual vs. Projected Next-Month Income")
+
+df_inc = df_rec[['year_month', 'total_credit', 'total_credit_lag_1',
+                  'total_credit_lag_2', 'total_credit_lag_3']].copy()
+
+def wma_income(row):
+    vals = [(w1, row['total_credit_lag_1']),
+            (w2, row['total_credit_lag_2']),
+            (w3, row['total_credit_lag_3'])]
+    valid_v = [(w, v) for w, v in vals if pd.notna(v) and v > 0]
+    if not valid_v:
+        return np.nan
+    tw = sum(w for w, _ in valid_v)
+    return sum(w * v for w, v in valid_v) / tw
+
+df_inc['projected_income'] = df_inc.apply(wma_income, axis=1)
+
+# Append next-month forecast row
+next_row_inc = pd.DataFrame({
+    'year_month': [next_month_name],
+    'total_credit': [np.nan],
+    'projected_income': [predicted_next_income]
+})
+df_inc = pd.concat([df_inc, next_row_inc], ignore_index=True)
+
+fig_i = go.Figure()
+fig_i.add_trace(go.Scatter(
+    x=df_inc['year_month'], y=df_inc['total_credit'],
+    name='Actual Income', line=dict(color='#03DAC6', width=2.5)
+))
+fig_i.add_trace(go.Scatter(
+    x=df_inc['year_month'], y=df_inc['projected_income'],
+    name='Projected Income (WMA)', line=dict(color='#BB86FC', width=2, dash='dot')
+))
+# Highlight next-month forecast star
+fig_i.add_trace(go.Scatter(
+    x=[next_month_name], y=[predicted_next_income],
+    name='Next Month Projection',
+    mode='markers',
+    marker=dict(color='#BB86FC', size=14, symbol='star',
+                line=dict(color='#FFFFFF', width=1))
+))
+fig_i.update_layout(
+    template="plotly_dark",
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)',
+    xaxis=dict(tickangle=-45, nticks=20),
+    yaxis_title="Amount ($)",
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+)
+st.plotly_chart(fig_i, use_container_width=True)
+st.caption("Projection uses a weighted moving average: 60% weight on last month, 25% on 2 months ago, 15% on 3 months ago.")
 
 # ── Expense Breakdown Context ─────────────────────────────────────────────────
 st.markdown("---")
